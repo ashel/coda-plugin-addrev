@@ -53,17 +53,34 @@
     CodaTextView* tv = [controller focusedTextView:self];
     if ( tv ) {
         //==== get addrev target
+        NSRange selection = [tv selectedRange];
+        NSRange current_line_range = [tv rangeOfCurrentLine];
         NSString* target_str = nil;
-        NSRange target_range = [tv previousWordRange];
         {
-            if (target_range.length > 0) {
-                target_str = [tv stringWithRange:target_range];
+            NSRange target_range = NSMakeRange(selection.location, 0);
+            // currently, previousWordRange gets not "word" str, so implement by hand
+            {
+                NSUInteger line_start_location = current_line_range.location;
+                NSString* line_prev_str = [tv stringWithRange:NSMakeRange(line_start_location, selection.location - line_start_location)];
+                NSError* error = nil;
+                NSRegularExpression* regexp = [NSRegularExpression regularExpressionWithPattern:@"\\w+$" options:0 error:&error];
+                NSTextCheckingResult* match = [regexp firstMatchInString:line_prev_str options:0 range:NSMakeRange(0, line_prev_str.length)];
+                if (match) {
+                    NSRange match_range = [match range];
+                    target_range.location = selection.location - match_range.length;
+                    target_range.length = match_range.length;
+                }
             }
-            if (target_str == nil) {
-                return;
+            {
+                if (target_range.length > 0) {
+                    target_str = [tv stringWithRange:target_range];
+                }
+                if (target_str == nil) {
+                    return;
+                }
             }
         }
-        
+            
         //==== find addrev strs
         NSArray* sorted_strs = nil;
         {
@@ -90,9 +107,18 @@
         
         //==== choose next or prev word and replace selected range
         {
-            NSRange current_word_range = [tv currentWordRange];
-            NSRange selection = [tv selectedRange];
-            NSUInteger current_word_endlocation = current_word_range.location + current_word_range.length;
+            NSUInteger current_word_endlocation = selection.location;
+            // currently, currentWordRange gets not "word" str, so implement by hand
+            {
+                NSUInteger line_end_location = current_line_range.location + current_line_range.length;
+                NSString* line_next_str = [tv stringWithRange:NSMakeRange(selection.location, line_end_location - selection.location)];
+                NSError* error = nil;
+                NSRegularExpression* regexp = [NSRegularExpression regularExpressionWithPattern:@"^\\w+" options:0 error:&error];
+                NSTextCheckingResult* match = [regexp firstMatchInString:line_next_str options:0 range:NSMakeRange(0, line_next_str.length)];
+                if (match) {
+                    current_word_endlocation = selection.location + [match range].length;
+                }
+            }
             
             // if current word end loc is larger than current loc, treat it as selected
             if (selection.location < current_word_endlocation) {
