@@ -5,7 +5,7 @@ coda-plugin-addrev
 
 ##how to install
 
-download installer/Addrev.codaplugin.zip and unzip it. Then, execute Addrev.codaplugin.zip.
+download installer/Addrev.codaplugin.zip and unzip it. Then, execute Addrev.codaplugin.
 
 Setup shortcuts if you need.
 
