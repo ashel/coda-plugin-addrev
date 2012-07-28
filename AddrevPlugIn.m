@@ -53,8 +53,8 @@
     CodaTextView* tv = [controller focusedTextView:self];
     if ( tv ) {
         //==== get addrev target
-        NSRange selection = [tv selectedRange];
-        NSRange current_line_range = [tv rangeOfCurrentLine];
+        const NSRange selection = [tv selectedRange];
+        const NSRange current_line_range = [tv rangeOfCurrentLine];
         NSString* target_str = nil;
         {
             NSRange target_range = NSMakeRange(selection.location, 0);
@@ -121,14 +121,15 @@
             }
             
             // if current word end loc is larger than current loc, treat it as selected
-            if (selection.location < current_word_endlocation) {
-                selection.length = current_word_endlocation - selection.location;
+            NSRange new_selection = selection;
+            if (new_selection.location < current_word_endlocation) {
+                new_selection.length = current_word_endlocation - new_selection.location;
             }
             
             NSUInteger current_index = NSNotFound;
             // if there is selection, find it from sorted_strs
-            if (selection.length > 0) {
-                NSString* selected_str = [tv stringWithRange:selection];
+            if (new_selection.length > 0) {
+                NSString* selected_str = [tv stringWithRange:new_selection];
                 current_index = [sorted_strs indexOfObject:selected_str inSortedRange:NSMakeRange(0, sorted_strs.count) options:0 usingComparator:^(id lhs, id rhs) {return [lhs caseInsensitiveCompare:rhs];}];
             }
             
@@ -158,9 +159,9 @@
             // insert addrev str and select it
             NSString* insert_str = [sorted_strs objectAtIndex:insert_str_index];
             [tv beginUndoGrouping];
-            [tv setSelectedRange:selection];
+            [tv setSelectedRange:new_selection];
             [tv insertText:insert_str];
-            [tv setSelectedRange:NSMakeRange(selection.location, insert_str.length)];
+            [tv setSelectedRange:NSMakeRange(new_selection.location, insert_str.length)];
             [tv endUndoGrouping];
         }
     }
