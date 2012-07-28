@@ -24,18 +24,18 @@
 
 - (id)initWithController:(CodaPlugInsController*)inController
 {
-	if ( (self = [super init]) != nil ) {
-		controller = inController;
-		[controller registerActionWithTitle:NSLocalizedString(@"AddrevNext", @"AddrevNext") target:self selector:@selector(addrev_next:)];
-		[controller registerActionWithTitle:NSLocalizedString(@"AddrevPrev", @"AddrevPrev") target:self selector:@selector(addrev_prev:)];
-	}
+    if ( (self = [super init]) != nil ) {
+        controller = inController;
+        [controller registerActionWithTitle:NSLocalizedString(@"AddrevNext", @"AddrevNext") target:self selector:@selector(addrev_next:)];
+        [controller registerActionWithTitle:NSLocalizedString(@"AddrevPrev", @"AddrevPrev") target:self selector:@selector(addrev_prev:)];
+    }
     
-	return self;
+    return self;
 }
 
 - (NSString*)name
 {
-	return @"Addrev";
+    return @"Addrev";
 }
 
 - (void)addrev_next:(id)sender
@@ -50,8 +50,8 @@
 
 - (void)addrev:(id)sender isDirectionNext:(BOOL)is_next
 {
-	CodaTextView* tv = [controller focusedTextView:self];
-	if ( tv ) {
+    CodaTextView* tv = [controller focusedTextView:self];
+    if ( tv ) {
         //==== get addrev target
         NSString* target_str = nil;
         NSRange target_range = [tv previousWordRange];
