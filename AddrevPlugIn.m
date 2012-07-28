@@ -137,7 +137,7 @@
             [tv setSelectedRange:NSMakeRange(selection.location, insert_str.length)];
             [tv endUndoGrouping];
         }
-	}
+    }
 }
 
 @end
